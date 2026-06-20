@@ -1,6 +1,6 @@
 # ProjectFlow
 
-A modern multi-tenant SaaS project management platform built with Next.js, TypeScript, PostgreSQL, and WebSockets.
+A modern multi-tenant SaaS project management platform built with Next.js, TypeScript, PostgreSQL, Redis, and WebSockets.
 
 ProjectFlow helps teams organize work, collaborate in real time, and manage projects through a Kanban-based workflow inspired by Trello and Jira.
 
@@ -10,18 +10,17 @@ ProjectFlow helps teams organize work, collaborate in real time, and manage proj
 
 ProjectFlow is a full-stack project management application designed around organizations, projects, tasks, and team collaboration.
 
-The platform supports:
+The platform enables teams to:
 
-* Multi-tenant workspaces
-* Role-based access control
-* Kanban task management
-* Real-time collaboration
-* File uploads
-* Team notifications
-* Activity tracking
-* Analytics dashboard
+* Manage multiple workspaces
+* Organize projects and tasks
+* Collaborate through comments and mentions
+* Receive real-time notifications
+* Track activity across projects
+* Upload and manage files
+* Monitor team productivity through analytics
 
-The goal of this project is to demonstrate production-grade software engineering practices including authentication, authorization, database design, API development, real-time systems, testing, and deployment.
+The project is designed to demonstrate production-grade software engineering practices including multi-tenancy, authentication, authorization, database design, API development, real-time systems, testing, CI/CD, and cloud infrastructure.
 
 ---
 
@@ -30,237 +29,97 @@ The goal of this project is to demonstrate production-grade software engineering
 ### Authentication & User Management
 
 * User registration and login
-* JWT-based authentication
-* Secure password hashing with bcrypt
+* Secure authentication
 * Email verification
 * Password reset workflow
 * Google OAuth integration
-* Profile management
+* User profile management
 
-### Multi-Tenant Organizations
+### Organizations & Access Control
 
-Create and manage independent workspaces.
-
-Examples:
-
-* Acme Inc
-* Marketing Team
-* Engineering Team
+* Multi-tenant workspaces
+* Organization memberships
+* Role-based access control
+* Team invitations
 
 Supported roles:
 
 | Role   | Description               |
 | ------ | ------------------------- |
-| Owner  | Full access               |
-| Admin  | Manage projects and users |
-| Member | Create and update tasks   |
+| Owner  | Full organization access  |
+| Admin  | Manage users and projects |
+| Member | Create and manage tasks   |
 | Viewer | Read-only access          |
-
-Role-based permissions are enforced throughout the platform.
-
----
 
 ### Project Management
 
-Each organization can contain multiple projects.
-
-Examples:
-
-* Website Redesign
-* Mobile Application
-* Internal CRM
-
-Features:
-
-* Create projects
-* Edit project details
+* Create and manage projects
 * Archive projects
 * Manage project members
+* Track project activity
 
----
+### Kanban Task Boards
 
-### Kanban Board
+* Drag-and-drop task management
+* Custom workflow stages
+* Task prioritization
+* Task assignment
+* Due dates and progress tracking
 
-Visual workflow management with drag-and-drop support.
+### Collaboration
 
-Columns:
-
-* Backlog
-* To Do
-* In Progress
-* Review
-* Done
-
-Capabilities:
-
-* Reorder tasks
-* Move tasks between columns
-* Real-time board updates
-* Optimistic UI updates
-
----
-
-### Task Management
-
-Comprehensive task tracking system.
-
-Task fields include:
-
-* Title
-* Description
-* Priority
-* Status
-* Assignee
-* Due Date
-
-Priority levels:
-
-* Low
-* Medium
-* High
-* Critical
-
-Features:
-
-* Create tasks
-* Update tasks
-* Assign users
-* Set deadlines
-* Track progress
-
----
-
-### Comments & Collaboration
-
-Collaborate directly within tasks.
-
-Features:
-
-* Create comments
-* Edit comments
-* Delete comments
-* Mention users
-* Discussion history
-
-Example:
-
-@john please review this implementation before deployment.
-
----
+* Task comments
+* User mentions
+* Activity feeds
+* Real-time updates
 
 ### Notifications
 
-Real-time user notifications.
+* Assignment notifications
+* Mention notifications
+* Workspace invitations
+* Task status updates
 
-Examples:
+### File Management
 
-* Task assigned
-* User mentioned
-* Workspace invitation
-* Task status changed
+* Upload documents and images
+* Attach files to tasks
+* Cloud storage integration
 
-Features:
+### Analytics & Reporting
 
-* Notification center
-* Read/unread tracking
-* Real-time delivery
-
----
-
-### Activity Logs
-
-Complete audit trail of user actions.
-
-Tracked events:
-
-* Project creation
-* Task updates
-* Role changes
-* File uploads
-* User invitations
-
----
-
-### File Attachments
-
-Upload and manage project assets.
-
-Supported file types:
-
-* Images
-* PDFs
-* Documents
-
-Powered by AWS S3.
-
----
-
-### Dashboard & Analytics
-
-Visual insights into team productivity.
-
-Metrics include:
-
-* Tasks completed
-* Tasks created
-* Completion rate
-* Active projects
-* Most active users
-* Upcoming deadlines
-
-Built with Recharts.
-
----
+* Team productivity metrics
+* Task completion statistics
+* Project insights
+* Activity reporting
 
 ### Search & Filtering
 
-Powerful search functionality using PostgreSQL full-text search.
+* Full-text search
+* Advanced filtering
+* Fast project and task discovery
 
-Filter by:
+### Real-Time Features
 
-* Assignee
-* Priority
-* Status
-* Due date
-* Project
-
----
-
-### Real-Time Collaboration
-
-Built using Socket.IO.
-
-Supported events:
-
-* task_created
-* task_updated
-* task_deleted
-* comment_added
-* notification_created
-* user_online
-
-Features:
-
-* Live Kanban updates
+* Live board updates
 * Instant notifications
 * Presence indicators
 * Collaborative workflows
 
 ---
 
-## Tech Stack
+## Technology Stack
 
 ### Frontend
 
-* Next.js 15
-* React 19
+* Next.js
+* React
 * TypeScript
 * Tailwind CSS
-* Zustand
 * TanStack Query
+* Zustand
 * React Hook Form
 * Zod
-* Socket.IO Client
 
 ### Backend
 
@@ -272,68 +131,15 @@ Features:
 
 ### Infrastructure
 
+* AWS S3
+* Resend
 * Docker
 * GitHub Actions
-* AWS S3
 * Vercel
-* Resend
 
 ---
 
-## System Architecture
-
-```text
-┌─────────────┐
-│   Next.js   │
-│ Frontend UI │
-└──────┬──────┘
-       │
-       ▼
-┌─────────────────┐
-│ API Layer       │
-│ Route Handlers  │
-└──────┬──────────┘
-       │
- ┌─────┴─────┐
- ▼           ▼
-PostgreSQL   Redis
-(Prisma)     Cache
-               │
-               ▼
-          WebSockets
-
-       ▼
-      S3
-(File Storage)
-```
-
----
-
-## Project Structure
-
-```text
-src
-│
-├── app
-├── components
-├── features
-│   ├── auth
-│   ├── projects
-│   ├── tasks
-│   └── notifications
-│
-├── hooks
-├── lib
-├── services
-├── stores
-├── types
-├── prisma
-└── tests
-```
-
----
-
-## Getting Started
+## Quick Start
 
 ### Prerequisites
 
@@ -346,7 +152,6 @@ src
 
 ```bash
 git clone https://github.com/yourusername/projectflow.git
-
 cd projectflow
 ```
 
@@ -358,26 +163,11 @@ npm install
 
 ### Configure Environment Variables
 
-Create a `.env` file:
-
-```env
-DATABASE_URL=
-REDIS_URL=
-
-JWT_SECRET=
-
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-
-AWS_ACCESS_KEY_ID=
-AWS_SECRET_ACCESS_KEY=
-AWS_BUCKET_NAME=
-AWS_REGION=
-
-RESEND_API_KEY=
-
-NEXT_PUBLIC_APP_URL=
+```bash
+cp .env.example .env
 ```
+
+Populate the required environment variables.
 
 ### Run Database Migrations
 
@@ -399,152 +189,90 @@ http://localhost:3000
 
 ---
 
-## Testing
+## Documentation
 
-### Unit Tests
+Detailed project documentation is available in the `/docs` directory.
 
-```bash
-npm run test
-```
+### Architecture
 
-Tools:
+* SYSTEM_ARCHITECTURE.md
+* ENGINEERING_DECISIONS.md
 
-* Vitest
-* Testing Library
+### Data Layer
 
-Coverage includes:
+* DATABASE_DESIGN.md
 
-* Components
-* Hooks
-* Utilities
-* Validation logic
+### API
 
-### End-to-End Tests
+* API_SPECIFICATION.md
 
-```bash
-npm run test:e2e
-```
+### Testing
 
-Powered by Playwright.
+* TESTING_STRATEGY.md
 
-Scenarios:
+### Development
 
-* Authentication flow
-* Project creation
-* Task management
-* Kanban drag-and-drop
-* Notifications
+* IMPLEMENTATION_ROADMAP.md
 
 ---
 
-## CI/CD
+## Project Status
 
-GitHub Actions automatically performs:
+Current development follows a phased implementation roadmap covering:
 
-1. Install dependencies
-2. Lint code
-3. Run tests
-4. Build application
-5. Deploy to production
+* Authentication & Authorization
+* Multi-Tenant Organizations
+* Project Management
+* Task Management
+* Real-Time Collaboration
+* Analytics & Reporting
+* Testing & Deployment
 
-Pipeline:
-
-```yaml
-lint
-test
-build
-deploy
-```
-
----
-
-## Roadmap
-
-### Phase 1
-
-* Authentication
-* Organizations
-* Role-based access control
-* Database setup
-
-### Phase 2
-
-* Projects
-* Kanban board
-* Task CRUD
-
-### Phase 3
-
-* Comments
-* Notifications
-* Activity logs
-
-### Phase 4
-
-* File uploads
-* Dashboard analytics
-* Search & filtering
-
-### Phase 5
-
-* WebSockets
-* Presence indicators
-* Optimistic updates
-
-### Phase 6
-
-* Testing
-* Docker
-* CI/CD
-* Production deployment
-
----
-
-## Learning Outcomes
-
-This project demonstrates experience with:
-
-* Full-stack application architecture
-* Multi-tenant SaaS design
-* Authentication and authorization
-* PostgreSQL database modeling
-* Prisma ORM
-* Real-time systems with WebSockets
-* Redis caching
-* API design
-* Cloud storage integration
-* Testing strategies
-* CI/CD pipelines
-* Docker containerization
-* Production deployment
+See `docs/IMPLEMENTATION_ROADMAP.md` for detailed milestones.
 
 ---
 
 ## Future Enhancements
 
-* Sprint planning
-* Gantt charts
-* Time tracking
-* Team chat
-* AI-powered task suggestions
-* Mobile application
-* Advanced reporting
+* Sprint Planning
+* Gantt Charts
+* Time Tracking
+* Team Chat
+* AI-Powered Task Suggestions
+* Mobile Application
 * Public API
 * Webhooks
 * Enterprise SSO
 
 ---
 
+## Learning Objectives
+
+This project explores:
+
+* Multi-tenant SaaS architecture
+* Authentication and authorization
+* PostgreSQL data modeling
+* Prisma ORM
+* Real-time systems
+* Redis caching
+* Cloud storage integration
+* API design
+* Automated testing
+* CI/CD pipelines
+* Docker containerization
+* Production deployment
+
+---
+
 ## License
 
-This project is unlicensed.
+Unlicensed
 
 ---
 
 ## Author
-Awa Jethro
 
----
+**Awa Jethro**
 
-## Purpose
 Built to showcase modern full-stack engineering practices using the Next.js ecosystem and cloud-native tooling.
