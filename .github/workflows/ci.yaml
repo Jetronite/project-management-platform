@@ -1,0 +1,93 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  validate-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: projectflow_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://test_user:test_password@localhost:5432/projectflow_test?schema=public
+      REDIS_URL: redis://localhost:6379
+      AWS_ACCESS_KEY_ID: mock-ci-access-key-id
+      AWS_SECRET_ACCESS_KEY: mock-ci-secret-access-key
+      AWS_REGION: us-east-1
+      AWS_S3_BUCKET: mock-ci-bucket
+      RESEND_API_KEY: re_mockciapikeyvalue
+      NEXT_PUBLIC_APP_URL: http://localhost:3000
+      JWT_SECRET: supersecretjwtdevelopmentkeywithatleast32characterslong
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Verify Formatting (Prettier)
+        run: npx prettier --check .
+
+      - name: Run Linter (ESLint)
+        run: npm run lint
+
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      - name: Run Database Migrations
+        run: npx prisma migrate deploy
+
+      - name: Run Unit and Integration Tests (Vitest)
+        run: npx vitest run --coverage
+
+      - name: Build Application
+        run: npm run build
+
+      - name: Install Playwright Browsers and System Dependencies
+        run: npx playwright install --with-deps
+
+      - name: Run End-to-End Tests (Playwright)
+        run: npx playwright test
+
+      - name: Upload Playwright Report on Failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30

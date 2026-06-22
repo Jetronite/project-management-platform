@@ -1,27 +1,39 @@
 import { cookies } from 'next/headers';
 import { env } from '@/lib/env/env';
+import { AUTH_CONSTANTS } from '@/constants/auth';
 
-const AUTH_COOKIE_NAME = 'projectflow_session';
-
-export async function setAuthCookie(token: string): Promise<void> {
+export async function setAuthCookies(accessToken: string, refreshToken: string): Promise<void> {
   const cookieStore = await cookies();
+  const isProduction = env.NODE_ENV === 'production';
+
   cookieStore.set({
-    name: AUTH_COOKIE_NAME,
-    value: token,
+    name: AUTH_CONSTANTS.ACCESS_TOKEN_COOKIE,
+    value: accessToken,
     httpOnly: true,
-    secure: env.NODE_ENV === 'production',
+    secure: isProduction,
     sameSite: 'lax',
     path: '/',
-    maxAge: 60 * 60 * 24 * 7, // 7 days
+    maxAge: 15 * 60, 
+  });
+
+  cookieStore.set({
+    name: AUTH_CONSTANTS.REFRESH_TOKEN_COOKIE,
+    value: refreshToken,
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: 'lax',
+    path: '/api/auth/refresh', 
+    maxAge: 7 * 24 * 60 * 60, 
   });
 }
 
-export async function getAuthCookie(): Promise<string | undefined> {
+export async function clearAuthCookies(): Promise<void> {
   const cookieStore = await cookies();
-  return cookieStore.get(AUTH_COOKIE_NAME)?.value;
+  cookieStore.delete(AUTH_CONSTANTS.ACCESS_TOKEN_COOKIE);
+  cookieStore.delete(AUTH_CONSTANTS.REFRESH_TOKEN_COOKIE);
 }
 
-export async function clearAuthCookie(): Promise<void> {
+export async function getAccessToken(): Promise<string | undefined> {
   const cookieStore = await cookies();
-  cookieStore.delete(AUTH_COOKIE_NAME);
+  return cookieStore.get(AUTH_CONSTANTS.ACCESS_TOKEN_COOKIE)?.value;
 }

@@ -11,7 +11,8 @@ const envSchema = z.object({
   AWS_S3_BUCKET: z.string().min(1),
   RESEND_API_KEY: z.string().min(1),
   NEXT_PUBLIC_APP_URL: z.string().url(),
-  JWT_SECRET: z.string().min(32, 'JWT_SECRET must be at least 32 characters long'),
+  JWT_ACCESS_SECRET: z.string().min(32, 'JWT_ACCESS_SECRET must be at least 32 characters long'),
+  JWT_REFRESH_SECRET: z.string().min(32, 'JWT_REFRESH_SECRET must be at least 32 characters long'),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
