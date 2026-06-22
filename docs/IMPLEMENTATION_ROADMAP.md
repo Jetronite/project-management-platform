@@ -2,243 +2,159 @@
 
 # ProjectFlow Implementation Roadmap
 
+## Overview
+
+This roadmap defines the recommended implementation order for ProjectFlow.
+
+The goal is to:
+
+* Build working vertical slices
+* Reduce implementation risk
+* Validate architecture early
+* Maintain production-quality standards
+* Deliver usable functionality at every phase
+
+Every phase must satisfy:
+
+* Code compiles
+* Tests pass
+* Documentation updated
+* No TODOs
+* Architecture respected
+
+---
+
+# Phase 0 — Foundation Setup
+
 ## Goal
 
-Build ProjectFlow incrementally using vertical slices.
-
-Each phase should result in:
-
-* Deployable software
-* Working database migrations
-* Passing tests
-* Updated documentation
-* Tagged Git milestone
-
----
-
-# Development Strategy
-
-Build order:
-
-```text
-Foundation
-    ↓
-Authentication
-    ↓
-Organizations
-    ↓
-Projects
-    ↓
-Tasks
-    ↓
-Comments + Activity
-    ↓
-Notifications
-    ↓
-Attachments
-    ↓
-Search + Analytics
-    ↓
-Realtime
-    ↓
-Production Hardening
-```
-
----
-
-# Phase 1 — Foundation & Infrastructure
-
-## Objective
-
-Create the engineering foundation.
+Establish the entire engineering foundation before implementing business features.
 
 ---
 
 ## Deliverables
 
-### Repository Setup
+### Project Setup
 
-```text
-Next.js
-TypeScript
-ESLint
-Prettier
-Husky
-Lint-Staged
-```
+* Next.js setup
+* TypeScript configuration
+* ESLint
+* Prettier
+* Environment management
 
 ### Infrastructure
 
-```text
-PostgreSQL
-Redis
-Docker
-Prisma
-```
+* PostgreSQL connection
+* Prisma configuration
+* Redis connection
+* AWS S3 configuration
+* Resend configuration
 
-### Shared Libraries
+### Core Utilities
 
-```text
-Prisma Client
-Logger
-Env Validation
-Redis Client
-```
+* Logger (Pino)
+* Error handling utilities
+* API response helpers
+* Pagination utilities
+* Slug utilities
+* Date utilities
 
-### CI/CD
+### Application Foundation
 
-```text
-GitHub Actions
+* Folder structure implementation
+* Route handler structure
+* Repository pattern foundation
+* Service layer foundation
 
-CI:
-- lint
-- test
-- build
+### Security Foundation
 
-CD:
-- deploy preview
-```
+* Environment validation
+* Secure cookie utilities
+* Password hashing utilities
+* JWT utilities
 
----
+### Testing Foundation
 
-## Database
-
-### Initial Schema
-
-```text
-User
-```
-
-Fields:
-
-```text
-id
-name
-email
-passwordHash
-createdAt
-updatedAt
-```
+* Vitest
+* Testing Library
+* Playwright
+* Test database configuration
 
 ---
 
-## API
+## Completion Criteria
 
-None yet.
-
----
-
-## UI Screens
-
-```text
-Landing Page
-404 Page
-500 Error Page
-```
+* Application starts successfully
+* Prisma connects
+* Redis connects
+* Tests execute
+* CI pipeline runs
 
 ---
 
-## Tests
+# Phase 1 — Authentication System
 
-### Unit
+## Goal
 
-```text
-env validation
-logger
-utilities
-```
-
-### Integration
-
-```text
-database connection
-```
+Implement complete user authentication.
 
 ---
 
-## Git Milestone
+## Database Entities
 
-```text
-v0.1-foundation
-```
-
----
-
-# Phase 2 — Authentication System
-
-## Objective
-
-User registration and login.
+* users
+* sessions
 
 ---
 
-## Deliverables
+## Features
 
-### Authentication
+### Registration
 
-```text
-Register
-Login
-Logout
-Forgot Password
-Reset Password
-Current User
-```
+POST /api/auth/register
 
-### Security
+### Login
 
-```text
-bcrypt
-JWT
-httpOnly cookies
-rate limiting
-```
+POST /api/auth/login
 
----
+### Logout
 
-## Schema Changes
+POST /api/auth/logout
 
-### User
+### Current User
 
-Add:
+GET /api/auth/me
 
-```text
-avatarUrl
-```
+### Forgot Password
 
-### PasswordResetToken
+POST /api/auth/forgot-password
 
-```text
-id
-token
-userId
-expiresAt
-usedAt
-```
+### Reset Password
+
+POST /api/auth/reset-password
 
 ---
 
-## Endpoints
+## Components
 
-```http
-POST /auth/register
-POST /auth/login
-POST /auth/logout
-GET  /auth/me
-POST /auth/forgot-password
-POST /auth/reset-password
-```
+* Login Form
+* Register Form
+* Forgot Password Form
+* Reset Password Form
 
 ---
 
-## UI Screens
+## Services
 
-```text
-Login
-Register
-Forgot Password
-Reset Password
-```
+### Auth Service
+
+Responsibilities:
+
+* Register user
+* Hash password
+* Verify password
+* Generate JWT
+* Manage sessions
 
 ---
 
@@ -246,211 +162,94 @@ Reset Password
 
 ### Unit
 
-```text
-Auth Service
-JWT helpers
-Password hashing
-```
+* Password hashing
+* JWT generation
+* JWT verification
+* Validation schemas
 
 ### Integration
 
-```text
-register
-login
-logout
-```
+* Registration flow
+* Login flow
+* Logout flow
+* Password reset flow
 
 ### E2E
 
-```text
-full auth flow
-```
+* Register
+* Login
+* Logout
 
 ---
 
-## Git Milestone
+## Completion Criteria
 
-```text
-v0.2-auth
-```
+User can:
 
----
-
-# Phase 3 — Organizations & RBAC
-
-## Objective
-
-Multi-tenancy foundation.
+* Register
+* Login
+* Logout
+* Reset password
 
 ---
 
-## Deliverables
+# Phase 2 — Organizations & Multi-Tenancy
+
+## Goal
+
+Implement tenant architecture.
+
+---
+
+## Database Entities
+
+* organizations
+* memberships
+
+---
+
+## Features
 
 ### Organization Management
 
-```text
-Create organization
-Update organization
-Delete organization
-```
+* Create organization
+* Update organization
+* Delete organization
+* List organizations
 
-### Memberships
+### Membership Management
 
-```text
-Invite users
-Manage roles
-Remove users
-```
-
-### RBAC
-
-```text
-OWNER
-ADMIN
-MEMBER
-VIEWER
-```
+* Invite member
+* Accept invitation
+* Remove member
+* Change role
 
 ---
 
-## Schema Changes
+## RBAC
 
-### Organization
+Roles:
 
-```text
-id
-name
-slug
-ownerId
-createdAt
-```
-
-### Membership
-
-```text
-id
-userId
-organizationId
-role
-```
-
-### Invitation
-
-```text
-id
-email
-organizationId
-role
-token
-expiresAt
-```
+* OWNER
+* ADMIN
+* MEMBER
+* VIEWER
 
 ---
 
-## Endpoints
+## Middleware
 
-```http
-/organizations
-/invitations
-/members
-```
+### Authentication Middleware
 
----
+Validate user identity.
 
-## UI Screens
+### Tenant Middleware
 
-```text
-Organization Switcher
-Create Organization
-Members Page
-Invitations Page
-```
+Validate organization scope.
 
----
+### Permission Middleware
 
-## Tests
-
-### Integration
-
-```text
-tenant isolation
-role validation
-organization CRUD
-```
-
-### E2E
-
-```text
-invite member
-accept invitation
-```
-
----
-
-## Git Milestone
-
-```text
-v0.3-organizations
-```
-
----
-
-# Phase 4 — Projects Module
-
-## Objective
-
-Project management foundation.
-
----
-
-## Deliverables
-
-```text
-Create Project
-Edit Project
-Archive Project
-Delete Project
-```
-
----
-
-## Schema Changes
-
-### Project
-
-```text
-id
-organizationId
-name
-description
-status
-createdBy
-createdAt
-```
-
----
-
-## Endpoints
-
-```http
-POST   /projects
-GET    /projects
-GET    /projects/:id
-PATCH  /projects/:id
-DELETE /projects/:id
-POST   /projects/:id/archive
-```
-
----
-
-## UI Screens
-
-```text
-Projects List
-Project Details
-Create Project Modal
-Archive Project Dialog
-```
+Validate role permissions.
 
 ---
 
@@ -458,92 +257,69 @@ Archive Project Dialog
 
 ### Unit
 
-```text
-Project Service
-```
+* Role checks
+* Membership rules
 
 ### Integration
 
-```text
-Project CRUD
-permissions
-```
+* Create organization
+* Invite user
+* Accept invitation
 
-### E2E
+### Security
 
-```text
-Create project
-Archive project
-```
+* Tenant isolation
+* Membership isolation
 
 ---
 
-## Git Milestone
+## Completion Criteria
 
-```text
-v0.4-projects
-```
+Multi-tenant architecture fully functional.
 
 ---
 
-# Phase 5 — Tasks & Kanban MVP
+# Phase 3 — Projects Module
 
-## Objective
+## Goal
 
-Core product value.
-
----
-
-## Deliverables
-
-```text
-Task CRUD
-Task Assignment
-Task Filtering
-Kanban Board
-Pagination
-```
+Implement project management.
 
 ---
 
-## Schema Changes
+## Database Entities
 
-### Task
-
-```text
-id
-projectId
-title
-description
-status
-priority
-assigneeId
-position
-dueDate
-createdBy
-```
+* projects
 
 ---
 
-## Endpoints
+## Features
 
-```http
-/tasks
-/tasks/:id
-/tasks/:id/move
-/tasks/:id/assign
-```
+### Project CRUD
+
+* Create project
+* List projects
+* Get project
+* Update project
+* Delete project
+
+### Project Lifecycle
+
+* Archive project
+* Restore project
 
 ---
 
-## UI Screens
+## Services
 
-```text
-Task Board
-Task Modal
-Task Details Drawer
-Task Filters
-```
+### Project Service
+
+Responsibilities:
+
+* Validation
+* Permission checks
+* Project lifecycle management
+* Activity logging
 
 ---
 
@@ -551,97 +327,278 @@ Task Filters
 
 ### Unit
 
-```text
-Task Service
-Task Position Logic
-```
+* Project creation
+* Project updates
 
 ### Integration
 
-```text
-Task CRUD
-Move Task
-Assign Task
-```
+* Create project
+* Archive project
 
 ### E2E
 
-```text
-Create task
-Drag task
-Assign task
-```
+* Full project lifecycle
 
 ---
 
-## Git Milestone
+## Completion Criteria
 
-```text
-v0.5-tasks
-```
+Projects fully manageable within organizations.
 
 ---
 
-# Phase 6 — Comments & Activity Logging
+# Phase 4 — Tasks & Kanban System
 
-## Objective
+## Goal
 
-Collaboration history.
-
----
-
-## Deliverables
-
-```text
-Task comments
-Activity feed
-Audit trail
-```
+Implement the core workflow engine.
 
 ---
 
-## Schema Changes
+## Database Entities
 
-### Comment
-
-```text
-id
-taskId
-authorId
-content
-```
-
-### ActivityLog
-
-```text
-id
-organizationId
-actorId
-action
-entityType
-entityId
-metadata
-createdAt
-```
+* tasks
 
 ---
 
-## Endpoints
+## Features
 
-```http
-/comments
-/activity
-```
+### Task CRUD
+
+* Create task
+* Update task
+* Delete task
+* Get task
+
+### Task Management
+
+* Assign task
+* Change priority
+* Change status
+* Set due date
+
+### Kanban
+
+Statuses:
+
+* BACKLOG
+* TODO
+* IN_PROGRESS
+* REVIEW
+* DONE
+
+### Reordering
+
+* Drag and drop
+* Position management
 
 ---
 
-## UI Screens
+## Services
 
-```text
-Comment Thread
-Activity Feed
-Recent Activity Widget
-```
+### Task Service
+
+Responsibilities:
+
+* Task lifecycle
+* Assignment
+* Position updates
+* Status transitions
+
+---
+
+## Tests
+
+### Unit
+
+* Task creation
+* Status updates
+* Position updates
+
+### Integration
+
+* Create task
+* Assign task
+* Move task
+
+### E2E
+
+* Complete Kanban workflow
+
+---
+
+## Completion Criteria
+
+Users can manage tasks using Kanban boards.
+
+---
+
+# Phase 5 — Comments & Collaboration
+
+## Goal
+
+Enable team collaboration.
+
+---
+
+## Database Entities
+
+* comments
+
+---
+
+## Features
+
+### Comments
+
+* Create comment
+* Update comment
+* Delete comment
+* List comments
+
+### Mentions
+
+* Mention users
+* Generate notifications
+
+---
+
+## Services
+
+### Comment Service
+
+Responsibilities:
+
+* Comment management
+* Mention detection
+* Activity logging
+
+---
+
+## Tests
+
+### Unit
+
+* Comment validation
+
+### Integration
+
+* Create comment
+* Mention workflow
+
+### E2E
+
+* Team collaboration flow
+
+---
+
+## Completion Criteria
+
+Tasks support discussions and collaboration.
+
+---
+
+# Phase 6 — Notifications
+
+## Goal
+
+Implement notification system.
+
+---
+
+## Database Entities
+
+* notifications
+
+---
+
+## Features
+
+### Notification Center
+
+* List notifications
+* Mark read
+* Mark unread
+* Mark all read
+
+### Notification Sources
+
+* Task assignment
+* Mentions
+* Invitations
+* Task updates
+
+---
+
+## Services
+
+### Notification Service
+
+Responsibilities:
+
+* Create notifications
+* Deliver notifications
+* Track read state
+
+---
+
+## Tests
+
+### Unit
+
+* Notification creation
+
+### Integration
+
+* Assignment notifications
+* Mention notifications
+
+### E2E
+
+* Notification workflow
+
+---
+
+## Completion Criteria
+
+Users receive actionable notifications.
+
+---
+
+# Phase 7 — File Attachments
+
+## Goal
+
+Implement file management.
+
+---
+
+## Database Entities
+
+* attachments
+
+---
+
+## Infrastructure
+
+* AWS S3
+* Signed URL uploads
+
+---
+
+## Features
+
+### Uploads
+
+* Generate upload URL
+* Upload file
+* Save metadata
+
+### Attachments
+
+* Attach to task
+* View attachment
+* Delete attachment
 
 ---
 
@@ -649,334 +606,106 @@ Recent Activity Widget
 
 ### Integration
 
-```text
-comment CRUD
-activity generation
-```
+* Upload URL generation
+* Attachment persistence
 
 ### E2E
 
-```text
-comment on task
-activity feed updates
-```
+* Upload lifecycle
 
 ---
 
-## Git Milestone
+## Completion Criteria
 
-```text
-v0.6-collaboration
-```
+Files can be uploaded and attached to tasks.
 
 ---
 
-# Phase 7 — Notifications System
+# Phase 8 — Activity Logging
 
-## Objective
+## Goal
 
-User awareness.
-
----
-
-## Deliverables
-
-```text
-Notification center
-Unread count
-Mark read
-Mark all read
-```
+Implement audit trail system.
 
 ---
 
-## Schema Changes
+## Database Entities
 
-### Notification
-
-```text
-id
-userId
-type
-title
-message
-readAt
-```
-
----
-
-## Notification Sources
-
-```text
-Task Assigned
-Comment Added
-Invitation Received
-Project Updates
-```
-
----
-
-## Endpoints
-
-```http
-GET /notifications
-PATCH /notifications/:id/read
-POST /notifications/read-all
-```
-
----
-
-## UI Screens
-
-```text
-Notification Dropdown
-Notification Center
-Unread Badge
-```
-
----
-
-## Tests
-
-### Integration
-
-```text
-notification creation
-mark read
-```
-
-### E2E
-
-```text
-task assignment notification
-```
-
----
-
-## Git Milestone
-
-```text
-v0.7-notifications
-```
-
----
-
-# Phase 8 — Attachments & File Storage
-
-## Objective
-
-File collaboration.
-
----
-
-## Deliverables
-
-```text
-AWS S3 uploads
-Signed URLs
-Attachment management
-```
-
----
-
-## Schema Changes
-
-### Attachment
-
-```text
-id
-taskId
-uploadedBy
-fileName
-storageKey
-size
-mimeType
-```
-
----
-
-## Endpoints
-
-```http
-POST /attachments/upload-url
-POST /tasks/:id/attachments
-DELETE /attachments/:id
-```
-
----
-
-## UI Screens
-
-```text
-Upload Attachment
-Attachment List
-Preview Modal
-```
-
----
-
-## Tests
-
-### Integration
-
-```text
-upload URL generation
-attachment creation
-```
-
-### E2E
-
-```text
-upload document
-delete attachment
-```
-
----
-
-## Git Milestone
-
-```text
-v0.8-files
-```
-
----
-
-# Phase 9 — Search & Analytics
-
-## Objective
-
-Data discovery and insights.
-
----
-
-## Deliverables
-
-```text
-Global search
-Organization analytics
-Project analytics
-```
-
----
-
-## Schema Changes
-
-### Search Indexes
-
-```text
-GIN indexes
-tsvector columns
-```
-
-No new tables required.
-
----
-
-## Endpoints
-
-```http
-GET /search
-GET /organizations/:id/analytics
-GET /projects/:id/analytics
-```
-
----
-
-## UI Screens
-
-```text
-Global Search
-Analytics Dashboard
-Project Analytics
-```
-
----
-
-## Tests
-
-### Integration
-
-```text
-search ranking
-analytics calculations
-```
-
-### E2E
-
-```text
-search tasks
-view analytics
-```
-
----
-
-## Git Milestone
-
-```text
-v0.9-insights
-```
-
----
-
-# Phase 10 — Real-Time Collaboration
-
-## Objective
-
-Live updates.
-
----
-
-## Deliverables
-
-```text
-Socket.IO integration
-Presence tracking
-Live comments
-Live task updates
-Live notifications
-```
-
----
-
-## Schema Changes
-
-None.
-
-Redis becomes required.
+* activity_logs
 
 ---
 
 ## Events
 
-### Client
-
-```text
-task:create
-task:update
-comment:create
-presence:update
-```
-
-### Server
-
-```text
-task_created
-task_updated
-comment_added
-notification_created
-user_online
-user_offline
-```
+* Task created
+* Task updated
+* Task deleted
+* Project created
+* Project updated
+* User invited
+* Role changed
 
 ---
 
-## UI Screens
+## Features
 
-```text
-Online Users
-Live Notifications
-Realtime Kanban Updates
-```
+### Activity Feed
+
+* Organization feed
+* Project feed
+
+---
+
+## Tests
+
+### Unit
+
+* Log generation
+
+### Integration
+
+* Audit record creation
+
+---
+
+## Completion Criteria
+
+All major actions are traceable.
+
+---
+
+# Phase 9 — Real-Time Collaboration
+
+## Goal
+
+Implement WebSocket functionality.
+
+---
+
+## Infrastructure
+
+* Socket.IO
+* Redis adapter preparation
+
+---
+
+## Features
+
+### Presence
+
+* User online
+* User offline
+
+### Real-Time Events
+
+* Task updates
+* Comments
+* Notifications
+
+### Rooms
+
+* Organization rooms
+* Project rooms
 
 ---
 
@@ -984,179 +713,208 @@ Realtime Kanban Updates
 
 ### Integration
 
-```text
-socket authentication
-room joining
-```
+* Socket authentication
 
 ### E2E
 
-```text
-multi-user updates
-presence tracking
-```
+* Live task updates
+* Presence updates
 
 ---
 
-## Git Milestone
+## Completion Criteria
 
-```text
-v1.0-realtime
-```
+Workspace updates occur instantly.
 
 ---
 
-# Phase 11 — Production Hardening
+# Phase 10 — Search
 
-## Objective
+## Goal
 
-Prepare for real customers.
-
----
-
-## Deliverables
-
-### Security
-
-```text
-CSRF protection
-Rate limiting
-Security headers
-Audit improvements
-```
-
-### Reliability
-
-```text
-Redis caching
-Retry policies
-Background jobs
-```
-
-### Monitoring
-
-```text
-Pino
-Sentry
-OpenTelemetry
-```
-
-### Performance
-
-```text
-Database indexes
-Caching strategy
-Query optimization
-```
+Implement platform-wide search.
 
 ---
 
-## Schema Changes
+## Technology
 
-### Optional
+PostgreSQL Full-Text Search
 
-```text
-JobQueue
-Webhook
-AuditEvent
-```
+---
+
+## Search Targets
+
+### Projects
+
+* Name
+* Description
+
+### Tasks
+
+* Title
+* Description
+
+### Comments
+
+* Content
+
+---
+
+## Features
+
+### Global Search
+
+GET /api/search
 
 ---
 
 ## Tests
 
-### Load Tests
+### Unit
 
-```text
-authentication
-task creation
-search
-socket load
-```
+* Query builder
 
-### Security Tests
+### Integration
 
-```text
-RBAC
-tenant isolation
-rate limiting
-```
+* Search results
+* Tenant isolation
+
+---
+
+## Completion Criteria
+
+Users can search across workspace content.
+
+---
+
+# Phase 11 — Analytics
+
+## Goal
+
+Implement reporting and metrics.
+
+---
+
+## Metrics
+
+### Organization Metrics
+
+* Tasks created
+* Tasks completed
+* Completion rate
+* Active projects
+
+### Project Metrics
+
+* Velocity
+* Completion trends
+
+---
+
+## Infrastructure
+
+* Redis caching
+
+---
+
+## Tests
+
+### Unit
+
+* Metric calculations
+
+### Integration
+
+* Dashboard queries
+
+---
+
+## Completion Criteria
+
+Organizations can view performance metrics.
+
+---
+
+# Phase 12 — Production Hardening
+
+## Goal
+
+Prepare for deployment.
+
+---
+
+## Security
+
+* Rate limiting
+* CSRF protection
+* Security headers
+* Cookie hardening
+
+---
+
+## Performance
+
+* Query optimization
+* Redis caching
+* Index verification
+
+---
+
+## Observability
+
+* Structured logging
+* Error tracking
+* Monitoring hooks
+
+---
+
+## CI/CD
+
+Pipeline:
+
+* Lint
+* Unit tests
+* Integration tests
+* Build
+* E2E tests
+* Deploy
 
 ---
 
 ## Documentation
 
-Finalize:
+Verify:
 
-```text
-API_SPECIFICATION.md
-DATABASE_DESIGN.md
-DEPLOYMENT_GUIDE.md
-SYSTEM_ARCHITECTURE.md
-CONTRIBUTING.md
-```
+* README
+* Architecture
+* Database Design
+* API Specs
+* Deployment Guide
 
 ---
 
-## Git Milestone
+## Completion Criteria
 
-```text
-v1.1-production-ready
-```
+Application is production-ready.
 
 ---
 
-# Final Release Criteria
+# Final Milestone
 
-Before launch:
+At completion ProjectFlow supports:
 
-## Functional
+* Authentication
+* Multi-tenancy
+* RBAC
+* Project management
+* Kanban workflow
+* Comments
+* Notifications
+* Attachments
+* Activity logs
+* Real-time collaboration
+* Search
+* Analytics
+* Production deployment
 
-* Authentication complete
-* Organizations complete
-* Projects complete
-* Tasks complete
-* Comments complete
-* Notifications complete
-* Attachments complete
-* Search complete
-* Analytics complete
-* Realtime complete
-
-## Quality
-
-* 80%+ service coverage
-* Full integration suite
-* Critical E2E coverage
-* CI passing
-
-## Operational
-
-* Monitoring configured
-* Error tracking enabled
-* Backups enabled
-* Environment documented
-
----
-
-# Expected Timeline
-
-```text
-Phase 1  → 1 week
-Phase 2  → 1 week
-Phase 3  → 1 week
-Phase 4  → 1 week
-Phase 5  → 2 weeks
-Phase 6  → 1 week
-Phase 7  → 1 week
-Phase 8  → 1 week
-Phase 9  → 1 week
-Phase 10 → 1 week
-Phase 11 → 1 week
-```
-
-Total:
-
-```text
-12–13 weeks
-```
+while maintaining the modular monolith architecture defined by the system design.
